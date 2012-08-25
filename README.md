@@ -1,13 +1,13 @@
 ```
-                              _______           _______  _______           _______ 
-                             (  ___  )|\     /|(  ____ \(  ____ \|\     /|(       )
-                             | (   ) || )   ( || (    \/| (    \/| )   ( || () () |
-                             | (___) || | _ | || (_____ | (_____ | |   | || || || |
-                             |  ___  || |( )| |(_____  )(_____  )| |   | || |(_)| |
-                             | (   ) || || || |      ) |      ) || |   | || |   | |
-                             | )   ( || () () |/\____) |/\____) || (___) || )   ( |
-                             |/     \|(_______)\_______)\_______)(_______)|/     \|
-                                                                                   
+ _______           _______  _______           _______ 
+(  ___  )|\     /|(  ____ \(  ____ \|\     /|(       )
+| (   ) || )   ( || (    \/| (    \/| )   ( || () () |
+| (___) || | _ | || (_____ | (_____ | |   | || || || |
+|  ___  || |( )| |(_____  )(_____  )| |   | || |(_)| |
+| (   ) || || || |      ) |      ) || |   | || |   | |
+| )   ( || () () |/\____) |/\____) || (___) || )   ( |
+|/     \|(_______)\_______)\_______)(_______)|/     \|
+
 ```
 
 NodeJS client libraries for talking to lots of Web Service APIs.
@@ -18,6 +18,9 @@ IRC : Come and say hello in #awssum on Freenode. :)
 
 Note: that I am looking for sponsorship for various libraries, especially larger ones such as GitHub, PayPal and
 Flickr. Please contact me.
+
+Btw: [AwsSum is being used](https://twitter.com/andychilton/status/235501828878520321) at
+[Medium.com](https://medium.com/)! Yay!
 
 # How to get AwsSum #
 
@@ -30,7 +33,11 @@ var awssum = require('awssum');
 var amazon = awssum.load('amazon/amazon');
 var S3 = awssum.load('amazon/s3').S3;
 
-var s3 = new S3('access_key_id', 'secret_access_key', 'aws_account_id', amazon.US_WEST_1);
+var s3 = new S3({
+    'accessKeyId' : accessKeyId,
+    'secretAccessKey' : secretAccessKey,
+    'region' : amazon.US_EAST_1
+});
 
 s3.ListBuckets(function(err, data) {
     if (err) {
@@ -142,7 +149,7 @@ Currently AwsSum has coverage of the following services:
     </tr>
     <tr>
       <td></td>
-      <td>Elastic Load Balancing</td>
+      <td>Elastic Load Balancing (ELB)</td>
       <td>Signature v2, (HmacSHA256)</td>
       <td>✔</td>
       <td>23/23 (100%)</td>
@@ -234,16 +241,23 @@ Currently AwsSum has coverage of the following services:
     <tr>
       <td></td>
       <td>Storage Gateway</td>
-      <td>Signature v2, (Hmac256)</td>
+      <td>Signature v4, (Hmac256)</td>
       <td>✔</td>
       <td>26/26 (100%)</td>
     </tr>
     <tr>
       <td></td>
       <td>CloudSearch (CS)</td>
-      <td>Signature v2, (Hmac256)</td>
+      <td>Signature v4, (Hmac256)</td>
       <td>✔</td>
       <td>20/20 (100%)</td>
+    </tr>
+    <tr>
+      <td></td>
+      <td>Glacier</td>
+      <td>Signature v4, (Hmac256)</td>
+      <td>✔</td>
+      <td>19/19 (100%)</td>
     </tr>
 
     <tr>
@@ -284,8 +298,8 @@ Currently AwsSum has coverage of the following services:
 In future releases we will be targeting (in no particular order):
 
 * AWS:
-    * CloudSearch ([Request or Sponsor Development][sponsor])
-    * Mechanical Turk
+    * Mechanical Turk ([Request or Sponsor Development][sponsor])
+    * Marketplace Web Services ([Request or Sponsor Development][sponsor])
 * RackspaceCloud:
     * Servers ([Request or Sponsor Development][sponsor])
     * Files ([Request or Sponsor Development][sponsor])

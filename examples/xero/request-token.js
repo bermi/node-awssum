@@ -1,11 +1,11 @@
-var inspect = require('eyes').inspector();
+var fmt = require('fmt');
 var awssum = require('awssum');
 var oauth = awssum.load('oauth');
 var xeroService = awssum.load('xero/xero');
 
-var env = process.env;
-var consumerKey = process.env.XERO_CONSUMER_KEY;
-var consumerSecret = process.env.XERO_CONSUMER_SECRET;
+var env            = process.env;
+var consumerKey    = env.XERO_CONSUMER_KEY;
+var consumerSecret = env.XERO_CONSUMER_SECRET;
 // don't need the token, tokenSecret or verifier
 
 var xero = new xeroService.Xero({
@@ -14,18 +14,18 @@ var xero = new xeroService.Xero({
 });
 
 
-console.log( 'ConsumerKey :', xero.consumerKey() );
-console.log( 'ConsumerSecret :',  xero.consumerSecret() );
+fmt.field('ConsumerKey', xero.consumerKey() );
+fmt.field('ConsumerSecret', xero.consumerSecret() );
 
 xero.RequestToken({ 'OAuthCallback' : 'oob' }, function(err, data) {
-    console.log("\nrequesting token - expecting success");
+    fmt.msg("requesting token - expecting success");
     if ( err ) {
-        inspect(err, 'Error');
+        fmt.dump(err, 'Error');
         process.exit();
     }
 
-    inspect(data, 'Data');
-    console.log( 'If you want to verify this token, visit: '
+    fmt.dump(data, 'Data');
+    fmt.msg( 'If you want to verify this token, visit: '
                  + xero.protocol() + '://' + xero.authorizeHost()
                  + xero.authorizePath()
                  + '?oauth_token=' + data.Body.oauth_token

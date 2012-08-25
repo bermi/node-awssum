@@ -1,12 +1,12 @@
-var inspect = require('eyes').inspector();
+var fmt = require('fmt');
 var awssum = require('awssum');
 var amazon = awssum.load('amazon/amazon');
 var Elb = awssum.load('amazon/elb').Elb;
 
-var env = process.env;
-var accessKeyId = process.env.ACCESS_KEY_ID;
-var secretAccessKey = process.env.SECRET_ACCESS_KEY;
-var awsAccountId = process.env.AWS_ACCOUNT_ID;
+var env             = process.env;
+var accessKeyId     = env.ACCESS_KEY_ID;
+var secretAccessKey = env.SECRET_ACCESS_KEY;
+var awsAccountId    = env.AWS_ACCOUNT_ID;
 
 var elb = new Elb({
     'accessKeyId'     : accessKeyId,
@@ -15,18 +15,18 @@ var elb = new Elb({
     'region'          : amazon.US_EAST_1
 });
 
-console.log( 'Region :', elb.region() );
-console.log( 'EndPoint :',  elb.host() );
-console.log( 'AccessKeyId :', elb.accessKeyId() );
-// console.log( 'SecretAccessKey :', elb.secretAccessKey() );
-console.log( 'AwsAccountId :', elb.awsAccountId() );
+fmt.field('Region', elb.region() );
+fmt.field('EndPoint', elb.host() );
+fmt.field('AccessKeyId', elb.accessKeyId() );
+fmt.field('SecretAccessKey', elb.secretAccessKey().substr(0, 3) + '...' );
+fmt.field('AwsAccountId', elb.awsAccountId() );
 
 var data = {
     LoadBalancerName : 'no-name',
 };
 
 elb.DeleteLoadBalancer(data, function(err, data) {
-    console.log("\ndeleting a load balancer - expecting success (it's idempotent)");
-    inspect(err, 'Error');
-    inspect(data, 'Data');
+    fmt.msg("deleting a load balancer - expecting success (it's idempotent)");
+    fmt.dump(err, 'Error');
+    fmt.dump(data, 'Data');
 });

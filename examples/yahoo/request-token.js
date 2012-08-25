@@ -1,11 +1,11 @@
-var inspect = require('eyes').inspector();
+var fmt = require('fmt');
 var awssum = require('awssum');
 var oauth = awssum.load('oauth');
 var yahooService = awssum.load('yahoo/yahoo');
 
-var env = process.env;
-var consumerKey = process.env.YAHOO_CONSUMER_KEY;
-var consumerSecret = process.env.YAHOO_CONSUMER_SECRET;
+var env            = process.env;
+var consumerKey    = env.YAHOO_CONSUMER_KEY;
+var consumerSecret = env.YAHOO_CONSUMER_SECRET;
 // don't need the token, tokenSecret or verifier
 
 var yahoo = new yahooService.Yahoo({
@@ -13,18 +13,18 @@ var yahoo = new yahooService.Yahoo({
     'consumerSecret' : consumerSecret
 });
 
-console.log( 'ConsumerKey :', yahoo.consumerKey() );
-console.log( 'ConsumerSecret :',  yahoo.consumerSecret() );
+fmt.field('ConsumerKey', yahoo.consumerKey() );
+fmt.field('ConsumerSecret', yahoo.consumerSecret() );
 
 yahoo.RequestToken({ 'OAuthCallback' : 'oob' }, function(err, data) {
-    console.log("\nrequesting token - expecting success");
+    fmt.msg("requesting token - expecting success");
     if ( err ) {
-        inspect(err, 'Error');
+        fmt.dump(err, 'Error');
         process.exit();
     }
 
-    inspect(data, 'Data');
-    console.log( 'If you want to verify this token, visit: '
+    fmt.dump(data, 'Data');
+    fmt.msg( 'If you want to verify this token, visit: '
                  + yahoo.protocol() + '://' + yahoo.authorizeHost()
                  + yahoo.authorizePath()
                  + '?oauth_token=' + data.Body.oauth_token

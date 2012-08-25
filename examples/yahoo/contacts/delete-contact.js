@@ -1,14 +1,14 @@
-var inspect = require('eyes').inspector({ maxLength : 65536 });
+var fmt = require('fmt');
 var commander = require('commander');
 var awssum = require('awssum');
 var oauth = awssum.load('oauth');
 var contactsService = awssum.load('yahoo/contacts');
 
-var env = process.env;
-var consumerKey = process.env.YAHOO_CONSUMER_KEY;
-var consumerSecret = process.env.YAHOO_CONSUMER_SECRET;
-var token = process.env.YAHOO_TOKEN;
-var tokenSecret = process.env.YAHOO_TOKEN_SECRET;
+var env            = process.env;
+var consumerKey    = env.YAHOO_CONSUMER_KEY;
+var consumerSecret = env.YAHOO_CONSUMER_SECRET;
+var token          = env.YAHOO_TOKEN;
+var tokenSecret    = env.YAHOO_TOKEN_SECRET;
 // don't need the verifier
 var yahooGuid = process.env.YAHOO_GUID;
 
@@ -21,14 +21,14 @@ var contacts = new contactsService.Contacts({
 contacts.setToken(token);
 contacts.setTokenSecret(tokenSecret);
 
-console.log( 'ConsumerKey    :', contacts.consumerKey()     );
-console.log( 'ConsumerSecret :', contacts.consumerSecret() );
-console.log( 'Token          :', contacts.token()          );
-console.log( 'TokenSecret    :', contacts.tokenSecret()    );
+fmt.field('ConsumerKey', contacts.consumerKey()     );
+fmt.field('ConsumerSecret', contacts.consumerSecret() );
+fmt.field('Token', contacts.token()          );
+fmt.field('TokenSecret', contacts.tokenSecret()    );
 
 // firstly, request a token
 contacts.DeleteContact({ Cid : '7272' }, function(err, data) {
-    console.log('\ncalling DeleteContact - expecting failure');
-    inspect(err, 'Err');
-    inspect(data, 'Data');
+    fmt.msg('\ncalling DeleteContact - expecting failure');
+    fmt.dump(err, 'Err');
+    fmt.dump(data, 'Data');
 });

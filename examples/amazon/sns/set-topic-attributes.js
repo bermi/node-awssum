@@ -1,12 +1,12 @@
-var inspect = require('eyes').inspector();
+var fmt = require('fmt');
 var awssum = require('awssum');
 var amazon = awssum.load('amazon/amazon');
 var Sns = awssum.load('amazon/sns').Sns;
 
-var env = process.env;
-var accessKeyId = process.env.ACCESS_KEY_ID;
-var secretAccessKey = process.env.SECRET_ACCESS_KEY;
-var awsAccountId = process.env.AWS_ACCOUNT_ID;
+var env             = process.env;
+var accessKeyId     = env.ACCESS_KEY_ID;
+var secretAccessKey = env.SECRET_ACCESS_KEY;
+var awsAccountId    = env.AWS_ACCOUNT_ID;
 
 var sns = new Sns({
     'accessKeyId'     : accessKeyId,
@@ -15,17 +15,17 @@ var sns = new Sns({
     'region'          : amazon.US_EAST_1
 });
 
-console.log( 'Region :', sns.region() );
-console.log( 'EndPoint :',  sns.host() );
-console.log( 'AccessKeyId :', sns.accessKeyId() );
-// console.log( 'SecretAccessKey :', sns.secretAccessKey() );
-console.log( 'AwsAccountId :', sns.awsAccountId() );
+fmt.field('Region', sns.region() );
+fmt.field('EndPoint', sns.host() );
+fmt.field('AccessKeyId', sns.accessKeyId() );
+fmt.field('SecretAccessKey', sns.secretAccessKey().substr(0, 3) + '...' );
+fmt.field('AwsAccountId', sns.awsAccountId() );
 
 // firstly, re-create this topic (it's idempotent) to get the topicArn
 sns.CreateTopic({ Name : 'my-topic' }, function(err, data) {
-    console.log("\nCreating (my-topic) - expecting success");
-    inspect(err, 'Error');
-    inspect(data, 'Data');
+    fmt.msg("Creating (my-topic) - expecting success");
+    fmt.dump(err, 'Error');
+    fmt.dump(data, 'Data');
 
     // now call the listSubscriptionsByTopic()
     if ( ! err ) {
@@ -35,9 +35,9 @@ sns.CreateTopic({ Name : 'my-topic' }, function(err, data) {
             AttributeValue : 'My Topic Display Name',
         };
         sns.SetTopicAttributes(args, function(err, data) {
-            console.log("\nsetTopicAttributes - expecting success");
-            inspect(err, 'Error');
-            inspect(data, 'Data');
+            fmt.msg("setTopicAttributes - expecting success");
+            fmt.dump(err, 'Error');
+            fmt.dump(data, 'Data');
         });
     }
 });

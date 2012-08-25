@@ -1,12 +1,12 @@
-var inspect = require('eyes').inspector();
+var fmt = require('fmt');
 var awssum = require('awssum');
 var amazon = awssum.load('amazon/amazon');
 var ElastiCache = awssum.load('amazon/elasticache').ElastiCache;
 
-var env = process.env;
-var accessKeyId = process.env.ACCESS_KEY_ID;
-var secretAccessKey = process.env.SECRET_ACCESS_KEY;
-var awsAccountId = process.env.AWS_ACCOUNT_ID;
+var env             = process.env;
+var accessKeyId     = env.ACCESS_KEY_ID;
+var secretAccessKey = env.SECRET_ACCESS_KEY;
+var awsAccountId    = env.AWS_ACCOUNT_ID;
 
 var elastiCache = new ElastiCache({
     'accessKeyId'     : accessKeyId,
@@ -15,20 +15,20 @@ var elastiCache = new ElastiCache({
     'region'          : amazon.US_EAST_1
 });
 
-console.log( 'Region :', elastiCache.region() );
-console.log( 'EndPoint :',  elastiCache.host() );
-console.log( 'AccessKeyId :', elastiCache.accessKeyId() );
-// console.log( 'SecretAccessKey :', elastiCache.secretAccessKey() );
-console.log( 'AwsAccountId :', elastiCache.awsAccountId() );
+fmt.field('Region', elastiCache.region() );
+fmt.field('EndPoint', elastiCache.host() );
+fmt.field('AccessKeyId', elastiCache.accessKeyId() );
+fmt.field('SecretAccessKey', elastiCache.secretAccessKey().substr(0, 3) + '...' );
+fmt.field('AwsAccountId', elastiCache.awsAccountId() );
 
 elastiCache.DeleteCacheCluster(function(err, data) {
-    console.log("\ndeleting cache cluster - expecting failure since no CacheClusterId given");
-    inspect(err, 'Error');
-    inspect(data, 'Data');
+    fmt.msg("deleting cache cluster - expecting failure since no CacheClusterId given");
+    fmt.dump(err, 'Error');
+    fmt.dump(data, 'Data');
 });
 
 elastiCache.DeleteCacheCluster({ CacheClusterId : 'blah' }, function(err, data) {
-    console.log("\ndeleting cache cluster - expecting failure since CacheClusterId does not exist");
-    inspect(err, 'Error');
-    inspect(data, 'Data');
+    fmt.msg("deleting cache cluster - expecting failure since CacheClusterId does not exist");
+    fmt.dump(err, 'Error');
+    fmt.dump(data, 'Data');
 });

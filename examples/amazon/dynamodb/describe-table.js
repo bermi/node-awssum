@@ -1,12 +1,12 @@
-var inspect = require('eyes').inspector();
+var fmt = require('fmt');
 var awssum = require('awssum');
 var amazon = awssum.load('amazon/amazon');
 var DynamoDB = awssum.load('amazon/dynamodb').DynamoDB;
 
-var env = process.env;
-var accessKeyId = process.env.ACCESS_KEY_ID;
-var secretAccessKey = process.env.SECRET_ACCESS_KEY;
-var awsAccountId = process.env.AWS_ACCOUNT_ID;
+var env             = process.env;
+var accessKeyId     = env.ACCESS_KEY_ID;
+var secretAccessKey = env.SECRET_ACCESS_KEY;
+var awsAccountId    = env.AWS_ACCOUNT_ID;
 
 var ddb = new DynamoDB({
     'accessKeyId' : accessKeyId,
@@ -15,15 +15,15 @@ var ddb = new DynamoDB({
     'region' : amazon.US_EAST_1
 });
 
-console.log( 'Region :', ddb.region() );
-console.log( 'EndPoint :',  ddb.host() );
-console.log( 'AccessKeyId :', ddb.accessKeyId() );
-// console.log( 'SecretAccessKey :', ddb.secretAccessKey() );
-console.log( 'AwsAccountId :', ddb.awsAccountId() );
+fmt.field('Region', ddb.region() );
+fmt.field('EndPoint', ddb.host() );
+fmt.field('AccessKeyId', ddb.accessKeyId() );
+fmt.field('SecretAccessKey', ddb.secretAccessKey().substr(0, 3) + '...' );
+fmt.field('AwsAccountId', ddb.awsAccountId() );
 
 ddb.ListTables(function(err, data) {
     if ( err ) {
-        inspect(err, 'Error when Listing Tables');
+        fmt.dump(err, 'Error when Listing Tables');
         return;
     }
 
@@ -32,14 +32,14 @@ ddb.ListTables(function(err, data) {
         TableName : data.Body.TableNames[0],
     };
     ddb.DescribeTable(tableData, function(err, data) {
-        console.log("\ndescribing the first table - expecting success");
-        inspect(err, 'Error');
-        inspect(data, 'Data');
+        fmt.msg("describing the first table - expecting success");
+        fmt.dump(err, 'Error');
+        fmt.dump(data, 'Data');
     });
 });
 
 ddb.DescribeTable({ TableName : 'test-tweets' }, function(err, data) {
-    console.log("\ndescribing the test-tweets table - expecting success");
-    inspect(err, 'Error');
-    inspect(data, 'Data');
+    fmt.msg("describing the test-tweets table - expecting success");
+    fmt.dump(err, 'Error');
+    fmt.dump(data, 'Data');
 });

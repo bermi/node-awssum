@@ -1,12 +1,12 @@
-var inspect = require('eyes').inspector();
+var fmt = require('fmt');
 var awssum = require('awssum');
 var amazon = awssum.load('amazon/amazon');
 var ImportExport = awssum.load('amazon/importexport').ImportExport;
 
-var env = process.env;
-var accessKeyId = process.env.ACCESS_KEY_ID;
-var secretAccessKey = process.env.SECRET_ACCESS_KEY;
-var awsAccountId = process.env.AWS_ACCOUNT_ID;
+var env             = process.env;
+var accessKeyId     = env.ACCESS_KEY_ID;
+var secretAccessKey = env.SECRET_ACCESS_KEY;
+var awsAccountId    = env.AWS_ACCOUNT_ID;
 
 var ie = new ImportExport({
     'accessKeyId'     : accessKeyId,
@@ -14,13 +14,13 @@ var ie = new ImportExport({
     'region'          : amazon.US_EAST_1
 });
 
-console.log( 'Region :', ie.region() );
-console.log( 'EndPoint :',  ie.host() );
-console.log( 'AccessKeyId :', ie.accessKeyId().substr(0,3) + '...' );
-console.log( 'SecretAccessKey :', ie.secretAccessKey().substr(0,3) + '...' );
+fmt.field('Region', ie.region() );
+fmt.field('EndPoint', ie.host() );
+fmt.field('AccessKeyId', ie.accessKeyId().substr(0,3) + '...' );
+fmt.field('SecretAccessKey', ie.secretAccessKey().substr(0,3) + '...' );
 
 ie.ListJobs(function(err, data) {
-    console.log("\nlisting jobs - expecting success");
-    inspect(err, 'Error');
-    inspect(data, 'Data');
+    fmt.msg("listing jobs - expecting success");
+    fmt.dump(err, 'Error');
+    fmt.dump(data, 'Data');
 });

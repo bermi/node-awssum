@@ -1,12 +1,12 @@
-var inspect = require('eyes').inspector();
+var fmt = require('fmt');
 var awssum = require('awssum');
 var amazon = awssum.load('amazon/amazon');
 var Ec2 = awssum.load('amazon/ec2').Ec2;
 
-var env = process.env;
-var accessKeyId = process.env.ACCESS_KEY_ID;
-var secretAccessKey = process.env.SECRET_ACCESS_KEY;
-var awsAccountId = process.env.AWS_ACCOUNT_ID;
+var env             = process.env;
+var accessKeyId     = env.ACCESS_KEY_ID;
+var secretAccessKey = env.SECRET_ACCESS_KEY;
+var awsAccountId    = env.AWS_ACCOUNT_ID;
 
 var ec2 = new Ec2({
     'accessKeyId'     : accessKeyId,
@@ -15,23 +15,40 @@ var ec2 = new Ec2({
     'region'          : amazon.US_EAST_1
 });
 
-console.log( 'Region :', ec2.region() );
-console.log( 'EndPoint :',  ec2.host() );
-console.log( 'AccessKeyId :', ec2.accessKeyId().substr(0,3) + '...' );
-console.log( 'SecretAccessKey :', ec2.secretAccessKey().substr(0,3) + '...' );
-console.log( 'AwsAccountId :', ec2.awsAccountId() );
+fmt.line();
+fmt.title('ec2.DescribeInstances');
+
+fmt.field('Region', ec2.region() );
+fmt.field('EndPoint', ec2.host() );
+fmt.field('AccessKeyId', ec2.accessKeyId().substr(0,3) + '...' );
+fmt.field('SecretAccessKey', ec2.secretAccessKey().substr(0,3) + '...' );
+fmt.field('AwsAccountId', ec2.awsAccountId() );
+
+fmt.line();
 
 ec2.DescribeInstances(function(err, data) {
-    console.log("\nDescribing instances - expecting success");
-    inspect(err, 'Error');
-    inspect(data, 'Data');
+    fmt.msg("Describing instances - expecting success");
+    fmt.dump(err, 'Error');
+    fmt.dump(data, 'Data');
+    fmt.line();
 });
 
-ec2.DescribeInstances({
-    FilterName  : [ 'ip-address', 'key-name' ],
-    FilterValue : [ [ '1.2.3.4', '5.6.7.8' ], [ 'my-key' ] ],
-}, function(err, data) {
-    console.log("\nDescribing instances (with filter) - expecting success");
-    inspect(err, 'Error');
-    inspect(data, 'Data');
+var args = {
+    Filter : [
+        {
+            Name : 'availability-zone',
+            Value : [ 'us-east-1', 'us-west-1' ],
+        },
+        {
+            Name : 'instance-id',
+            Value : [ 'i-7a00642e' ],
+        },
+    ],
+};
+
+ec2.DescribeInstances(args, function(err, data) {
+    fmt.msg("Describing instances (with filter) - expecting success");
+    fmt.dump(err, 'Error');
+    fmt.dump(data, 'Data');
+    fmt.line();
 });

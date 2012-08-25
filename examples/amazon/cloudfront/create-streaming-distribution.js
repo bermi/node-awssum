@@ -1,12 +1,12 @@
-var inspect = require('eyes').inspector();
+var fmt = require('fmt');
 var awssum = require('awssum');
 var amazon = awssum.load('amazon/amazon');
 var CloudFront = awssum.load('amazon/cloudfront').CloudFront;
 
-var env = process.env;
-var accessKeyId = process.env.ACCESS_KEY_ID;
-var secretAccessKey = process.env.SECRET_ACCESS_KEY;
-var awsAccountId = process.env.AWS_ACCOUNT_ID;
+var env             = process.env;
+var accessKeyId     = env.ACCESS_KEY_ID;
+var secretAccessKey = env.SECRET_ACCESS_KEY;
+var awsAccountId    = env.AWS_ACCOUNT_ID;
 
 var cloudFront = new CloudFront({
     'accessKeyId' : accessKeyId,
@@ -15,11 +15,11 @@ var cloudFront = new CloudFront({
     'region' : amazon.US_EAST_1
 });
 
-console.log( 'Region :', cloudFront.region() );
-console.log( 'EndPoint :',  cloudFront.host() );
-console.log( 'AccessKeyId :', cloudFront.accessKeyId() );
-// console.log( 'SecretAccessKey :', cloudFront.secretAccessKey() );
-console.log( 'AwsAccountId :', cloudFront.awsAccountId() );
+fmt.field('Region', cloudFront.region() );
+fmt.field('EndPoint', cloudFront.host() );
+fmt.field('AccessKeyId', cloudFront.accessKeyId() );
+fmt.field('SecretAccessKey', cloudFront.secretAccessKey().substr(0, 3) + '...' );
+fmt.field('AwsAccountId', cloudFront.awsAccountId() );
 
 var data = {
     S3OriginDnsName : 'mybucket.s3.amazonaws.com',
@@ -35,7 +35,7 @@ var data = {
 };
 
 cloudFront.CreateStreamingDistribution(data, function(err, data) {
-    console.log("\ncreating a streaming distribution - expecting failure for tonnes of reasons");
-    inspect(err, 'Error');
-    inspect(data, 'Data');
+    fmt.msg("creating a streaming distribution - expecting failure for tonnes of reasons");
+    fmt.dump(err, 'Error');
+    fmt.dump(data, 'Data');
 });

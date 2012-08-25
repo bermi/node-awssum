@@ -1,12 +1,12 @@
-var inspect = require('eyes').inspector();
+var fmt = require('fmt');
 var awssum = require('awssum');
 var amazon = awssum.load('amazon/amazon');
 var Sns = awssum.load('amazon/sns').Sns;
 
-var env = process.env;
-var accessKeyId = process.env.ACCESS_KEY_ID;
-var secretAccessKey = process.env.SECRET_ACCESS_KEY;
-var awsAccountId = process.env.AWS_ACCOUNT_ID;
+var env             = process.env;
+var accessKeyId     = env.ACCESS_KEY_ID;
+var secretAccessKey = env.SECRET_ACCESS_KEY;
+var awsAccountId    = env.AWS_ACCOUNT_ID;
 
 var sns = new Sns({
     'accessKeyId'     : accessKeyId,
@@ -15,20 +15,20 @@ var sns = new Sns({
     'region'          : amazon.US_EAST_1
 });
 
-console.log( 'Region :', sns.region() );
-console.log( 'EndPoint :',  sns.host() );
-console.log( 'AccessKeyId :', sns.accessKeyId() );
-// console.log( 'SecretAccessKey :', sns.secretAccessKey() );
-console.log( 'AwsAccountId :', sns.awsAccountId() );
+fmt.field('Region', sns.region() );
+fmt.field('EndPoint', sns.host() );
+fmt.field('AccessKeyId', sns.accessKeyId() );
+fmt.field('SecretAccessKey', sns.secretAccessKey().substr(0, 3) + '...' );
+fmt.field('AwsAccountId', sns.awsAccountId() );
 
 sns.Unsubscribe({ SubscriptionArn : 'fakeSubscriptionArn' }, function(err, data) {
-    console.log("\nUnsubscribing this subscriptionArn - expecting failure");
-    inspect(err, 'Error');
-    inspect(data, 'Data');
+    fmt.msg("Unsubscribing this subscriptionArn - expecting failure");
+    fmt.dump(err, 'Error');
+    fmt.dump(data, 'Data');
 });
 
 sns.Unsubscribe({}, function(err, data) {
-    console.log("\nUnsubscribing an undefined subscriptionArn - expecting failure");
-    inspect(err, 'Error');
-    inspect(data, 'Data');
+    fmt.msg("Unsubscribing an undefined subscriptionArn - expecting failure");
+    fmt.dump(err, 'Error');
+    fmt.dump(data, 'Data');
 });

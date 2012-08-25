@@ -1,14 +1,14 @@
-var inspect = require('eyes').inspector({ maxLength : 65536 });
+var fmt = require('fmt');
 var commander = require('commander');
 var awssum = require('awssum');
 var oauth = awssum.load('oauth');
 var xeroService = awssum.load('xero/xero');
 
-var env = process.env;
-var consumerKey = process.env.XERO_CONSUMER_KEY;
-var consumerSecret = process.env.XERO_CONSUMER_SECRET;
-var token = process.env.XERO_TOKEN;
-var tokenSecret = process.env.XERO_TOKEN_SECRET;
+var env            = process.env;
+var consumerKey    = env.XERO_CONSUMER_KEY;
+var consumerSecret = env.XERO_CONSUMER_SECRET;
+var token          = env.XERO_TOKEN;
+var tokenSecret    = env.XERO_TOKEN_SECRET;
 // don't need the verifier
 
 var xero = new xeroService.Xero({
@@ -19,25 +19,25 @@ var xero = new xeroService.Xero({
 xero.setToken(token);
 xero.setTokenSecret(tokenSecret);
 
-console.log( 'ConsumerKey    :', xero.consumerKey()     );
-console.log( 'ConsumerSecret :', xero.consumerSecret() );
-console.log( 'Token          :', xero.token()          );
-console.log( 'TokenSecret    :', xero.tokenSecret()    );
+fmt.field('ConsumerKey', xero.consumerKey()     );
+fmt.field('ConsumerSecret', xero.consumerSecret() );
+fmt.field('Token', xero.token()          );
+fmt.field('TokenSecret', xero.tokenSecret()    );
 
 xero.GetUsers(function(err, data) {
-    console.log('\nget users - expecting success');
-    inspect(err, 'Err');
-    inspect(data, 'Data');
+    fmt.msg('\nget users - expecting success');
+    fmt.dump(err, 'Err');
+    fmt.dump(data, 'Data');
 });
 
 xero.GetUsers({ 'Where' : 'Firstname="Andrew"' }, function(err, data) {
-    console.log('\nget users where Firstname="Andrew" - expecting success');
-    inspect(err, 'Err');
-    inspect(data, 'Data');
+    fmt.msg('\nget users where Firstname="Andrew" - expecting success');
+    fmt.dump(err, 'Err');
+    fmt.dump(data, 'Data');
 });
 
 xero.GetUsers({ 'Order' : 'LastName' }, function(err, data) {
-    console.log('\nget users order by LastName - expecting success');
-    inspect(err, 'Err');
-    inspect(data, 'Data');
+    fmt.msg('\nget users order by LastName - expecting success');
+    fmt.dump(err, 'Err');
+    fmt.dump(data, 'Data');
 });

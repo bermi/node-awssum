@@ -1,12 +1,12 @@
-var inspect = require('eyes').inspector();
+var fmt = require('fmt');
 var awssum = require('awssum');
 var amazon = awssum.load('amazon/amazon');
 var Ses = awssum.load('amazon/ses').Ses;
 
-var env = process.env;
-var accessKeyId = process.env.ACCESS_KEY_ID;
-var secretAccessKey = process.env.SECRET_ACCESS_KEY;
-var awsAccountId = process.env.AWS_ACCOUNT_ID;
+var env             = process.env;
+var accessKeyId     = env.ACCESS_KEY_ID;
+var secretAccessKey = env.SECRET_ACCESS_KEY;
+var awsAccountId    = env.AWS_ACCOUNT_ID;
 
 var ses = new Ses({
     'accessKeyId'     : accessKeyId,
@@ -14,14 +14,14 @@ var ses = new Ses({
     // 'awsAccountId'    : awsAccountId, // optional
 });
 
-console.log( 'Region :', ses.region() );
-console.log( 'EndPoint :',  ses.host() );
-console.log( 'AccessKeyId :', ses.accessKeyId() );
-// console.log( 'SecretAccessKey :', ses.secretAccessKey() );
-console.log( 'AwsAccountId :', ses.awsAccountId() );
+fmt.field('Region', ses.region() );
+fmt.field('EndPoint', ses.host() );
+fmt.field('AccessKeyId', ses.accessKeyId() );
+fmt.field('SecretAccessKey', ses.secretAccessKey().substr(0, 3) + '...' );
+fmt.field('AwsAccountId', ses.awsAccountId() );
 
 ses.DeleteIdentity({ Identity : 'joey-jones' }, function(err, data) {
-    console.log("\ndeleting identity - expecting failure (invalid format)");
-    inspect(err, 'Error');
-    inspect(data, 'Data');
+    fmt.msg("deleting identity - expecting failure (invalid format)");
+    fmt.dump(err, 'Error');
+    fmt.dump(data, 'Data');
 });

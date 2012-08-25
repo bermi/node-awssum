@@ -1,12 +1,12 @@
-var inspect = require('eyes').inspector();
+var fmt = require('fmt');
 var awssum = require('awssum');
 var amazon = awssum.load('amazon/amazon');
 var DynamoDB = awssum.load('amazon/dynamodb').DynamoDB;
 
-var env = process.env;
-var accessKeyId = process.env.ACCESS_KEY_ID;
-var secretAccessKey = process.env.SECRET_ACCESS_KEY;
-var awsAccountId = process.env.AWS_ACCOUNT_ID;
+var env             = process.env;
+var accessKeyId     = env.ACCESS_KEY_ID;
+var secretAccessKey = env.SECRET_ACCESS_KEY;
+var awsAccountId    = env.AWS_ACCOUNT_ID;
 
 var ddb = new DynamoDB({
     'accessKeyId' : accessKeyId,
@@ -15,11 +15,11 @@ var ddb = new DynamoDB({
     'region' : amazon.US_EAST_1
 });
 
-console.log( 'Region :', ddb.region() );
-console.log( 'EndPoint :',  ddb.host() );
-console.log( 'AccessKeyId :', ddb.accessKeyId() );
-// console.log( 'SecretAccessKey :', ddb.secretAccessKey() );
-console.log( 'AwsAccountId :', ddb.awsAccountId() );
+fmt.field('Region', ddb.region() );
+fmt.field('EndPoint', ddb.host() );
+fmt.field('AccessKeyId', ddb.accessKeyId() );
+fmt.field('SecretAccessKey', ddb.secretAccessKey().substr(0, 3) + '...' );
+fmt.field('AwsAccountId', ddb.awsAccountId() );
 
 var user1 = {
     TableName : 'test',
@@ -33,7 +33,7 @@ var user1 = {
 };
 
 ddb.DeleteItem(user1, function(err, data) {
-    console.log("\ndeleting user 'pie' - expecting success");
-    inspect(err, 'Error');
-    inspect(data, 'Data');
+    fmt.msg("deleting user 'pie' - expecting success");
+    fmt.dump(err, 'Error');
+    fmt.dump(data, 'Data');
 });
